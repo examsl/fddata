@@ -205,7 +205,7 @@
 </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzSi1uqrrdopVamdaUmqyNzcrTZESdv22dWNrpBND_O_g3q96SHwUa3sQ8hCrDxAUZZhA/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzJ4Y2RQpNov5KMhAUmJUJSN9GJZnLvabQ_JaEKbSfqDpAIABu8Hip_GMifIhD2z79gwA/exec";
 
     function getLocalDateFormat(dateObj) {
         if (!dateObj || isNaN(dateObj)) return "";
@@ -342,7 +342,6 @@
             let tbody = document.getElementById('printListBody');
             tbody.innerHTML = "";
             
-            // එකතුව සඳහා ශතවලින් ගණනය කිරීම (Rounding fix)
             let sumIntCents = 0, sumDedCents = 0, sumSentCents = 0;
 
             if (data.length === 0) {
@@ -365,6 +364,14 @@
                     sumDedCents += Math.round(rDedInt * 100);
                     sumSentCents += Math.round(rSentInt * 100);
 
+                    // පොලී ප්‍රතිශතය (Interest Rate) පෙන්වීමේ දෝෂය නිවැරදි කිරීම
+                    let displayRate = row[10];
+                    if (typeof displayRate === 'number' && displayRate < 1 && displayRate > 0) {
+                        displayRate = (displayRate * 100).toFixed(2) + "%";
+                    } else if (displayRate && !displayRate.toString().includes('%')) {
+                        displayRate = displayRate.toString() + "%";
+                    }
+
                     let tr = `<tr>
                         <td>${formatCurrency(row[0])}</td>
                         <td>${row[1]}</td>
@@ -376,7 +383,7 @@
                         <td>${formatCurrency(row[7])}</td>
                         <td>${row[8]}</td>
                         <td>${row[9]}</td>
-                        <td>${row[10]}</td>
+                        <td>${displayRate}</td>
                         <td>${formatDate(row[11])}</td>
                     </tr>`;
                     tbody.innerHTML += tr;
